@@ -8,7 +8,7 @@ const Home = () => {
       <Text className="font-rubik-extrabold text-lg">
         Welcome to ReadBlendr
       </Text>
-      <Link href="/sign-in">Sign In</Link>
+      <Link href="/onboarding">Get started</Link>
       <Link href="/explore">Explore</Link>
       <Link href="/profile">Profile</Link>
       <Link href="/books/1">Book</Link>
