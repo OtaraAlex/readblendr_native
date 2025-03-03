@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import "./global.css";
+import GlobalProvider from "@/lib/global-provider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,9 +29,9 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <>
+    <GlobalProvider>
       <StatusBar backgroundColor="#161618" style="auto" />
       <Stack screenOptions={{ headerShown: false }} />
-    </>
+    </GlobalProvider>
   );
 }

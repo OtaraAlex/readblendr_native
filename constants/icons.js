@@ -11,6 +11,8 @@ import logout from "../assets/icons/logout.png";
 import eyeHide from "../assets/icons/eye-hide.png";
 import eye from "../assets/icons/eye.png";
 import google from "../assets/icons/google.png";
+import bell from "../assets/icons/bell.png";
+import edit from "../assets/icons/edit.png";
 
 export default {
   bookmark,
@@ -26,4 +28,6 @@ export default {
   eyeHide,
   eye,
   google,
+  bell,
+  edit,
 };

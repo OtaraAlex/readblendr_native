@@ -1,12 +1,25 @@
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FormField from "@/components/FormField";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
 import { icons, images } from "@/constants";
+import { googleLogin } from "@/lib/appwrite";
+import { useGlobalContext } from "@/lib/global-provider";
 
 const SignUp = () => {
+  const { refetch, loading, isLoggedIn } = useGlobalContext();
+
+  if (!loading && isLoggedIn) return <Redirect href="/" />;
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -16,7 +29,17 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {};
-  const handleGoogleLogin = async () => {};
+
+  const handleGoogleLogin = async () => {
+    const result = await googleLogin();
+
+    if (result) {
+      refetch();
+    } else {
+      Alert.alert("Error", "Failed to login");
+    }
+  };
+
   return (
     <SafeAreaView className="bg-white h-full">
       <ScrollView>
