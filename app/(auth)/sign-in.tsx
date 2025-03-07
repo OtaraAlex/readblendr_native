@@ -12,7 +12,7 @@ import { Link, Redirect } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
 import { icons, images } from "@/constants";
-import { googleLogin } from "@/lib/appwrite";
+import { getCurrentUser, googleLogin, signIn } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
 
 const SignIn = () => {
@@ -27,7 +27,26 @@ const SignIn = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Error", "Please fill in all the fields!");
+    }
+
+    setIsSubmitting(true);
+    try {
+      await signIn(form.email, form.password);
+
+      const result = await getCurrentUser();
+
+      if (result) {
+        refetch();
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to login");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     const result = await googleLogin();
@@ -50,7 +69,7 @@ const SignIn = () => {
           />
 
           <Text className="text-2xl text-semibold mt-10 font-rubik-semibold">
-            Log in to ReadBlendr
+            Log in to continue to ReadBlendr
           </Text>
 
           <TouchableOpacity

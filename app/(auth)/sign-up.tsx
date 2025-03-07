@@ -12,7 +12,7 @@ import { Link, Redirect } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useState } from "react";
 import { icons, images } from "@/constants";
-import { googleLogin } from "@/lib/appwrite";
+import { googleLogin, registerUser } from "@/lib/appwrite";
 import { useGlobalContext } from "@/lib/global-provider";
 
 const SignUp = () => {
@@ -28,7 +28,28 @@ const SignUp = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async () => {
+    if (!form.username || !form.email || !form.password) {
+      Alert.alert("Error", "Please fill in all the fields!");
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await registerUser(
+        form.email,
+        form.password,
+        form.username
+      );
+
+      if (result) {
+        refetch();
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to register");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     const result = await googleLogin();
@@ -51,7 +72,7 @@ const SignUp = () => {
           />
 
           <Text className="text-2xl text-semibold mt-10 font-rubik-semibold">
-            Log in to ReadBlendr
+            Sign up to continue to ReadBlendr
           </Text>
 
           <TouchableOpacity
@@ -77,7 +98,7 @@ const SignUp = () => {
           </View>
 
           <FormField
-            title="Username"
+            title="Name"
             value={form.username}
             handleChangeText={(e) => setForm({ ...form, username: e })}
             otherStyles="mt-7"

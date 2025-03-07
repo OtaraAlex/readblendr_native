@@ -1,4 +1,11 @@
-import { Account, Avatars, Client, OAuthProvider } from "react-native-appwrite";
+import {
+  Account,
+  Avatars,
+  Client,
+  Databases,
+  ID,
+  OAuthProvider,
+} from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
 
@@ -6,6 +13,8 @@ export const config = {
   platform: "com.eg.readblendr",
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
+  databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
+  userCollectionId: process.env.EXPO_PUBLIC_APPWRITE_USERS_COLLECTION_ID,
 };
 
 export const client = new Client();
@@ -17,6 +26,7 @@ client
 
 export const avatar = new Avatars(client);
 export const account = new Account(client);
+export const databases = new Databases(client);
 
 export async function googleLogin() {
   try {
@@ -53,6 +63,54 @@ export async function googleLogin() {
     return false;
   }
 }
+
+export async function registerUser(
+  email: string,
+  password: string,
+  username: string
+) {
+  try {
+    const newAccount = await account.create(
+      ID.unique(),
+      email,
+      password,
+      username
+    );
+
+    if (!newAccount) throw new Error("Failed to register");
+
+    const avatarUrl = avatar.getInitials(username);
+
+    await signIn(email, password);
+
+    const newUser = await databases.createDocument(
+      config.databaseId!,
+      config.userCollectionId!,
+      ID.unique(),
+      {
+        accountId: newAccount.$id,
+        email,
+        username,
+        avatar: avatarUrl.toString(),
+      }
+    );
+
+    return newUser;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+export const signIn = async (email: string, password: string) => {
+  try {
+    const session = await account.createEmailPasswordSession(email, password);
+
+    return session;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
 
 export async function logout() {
   try {
