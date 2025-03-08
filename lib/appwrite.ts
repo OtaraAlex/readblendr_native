@@ -57,6 +57,22 @@ export async function googleLogin() {
 
     if (!session) throw new Error("Failed to create a session");
 
+    const user = await account.get();
+
+    const newUser = await databases.createDocument(
+      config.databaseId!,
+      config.userCollectionId!,
+      ID.unique(),
+      {
+        accountId: user.$id,
+        email: user.email,
+        username: user.name,
+        avatar: avatar.getInitials(user.name).toString(),
+      }
+    );
+
+    if (!newUser) throw new Error("Failed to create user document");
+
     return true;
   } catch (error) {
     console.error(error);
